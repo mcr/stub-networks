@@ -7,20 +7,20 @@
 <!-- NOTE TO EDITORS: PLEASE READ BEFORE EDITING THIS DOCUMENT
 
 	 The document is formatted so that it is easy to maintain in emacs, where the primary author (me) does his work.  The reason
-	 there is space between <t> tags and the text they enclose is that it makes it easier to reflow the paragraphs. 
+	 there is space between <t> tags and the text they enclose is that it makes it easier to reflow the paragraphs.
 
 	 DO NOT REMOVE THESE SPACES!!!
 
 	 Please and thank you,
 
-	 Ted 
+	 Ted
 -->
 
 <rfc obsoletes="" updates="" category="info" ipr="trust200902"
      docName="draft-lemon-stub-networks-ps-00">
   <front>
     <title abbrev="Stub Networks Problem Statement">Self-configuring Stub Networks: Problem Statement</title>
-    
+
     <author initials="T" surname="Lemon" fullname="Ted Lemon">
       <organization>Apple, Inc.</organization>
       <address>
@@ -203,7 +203,7 @@
 
 	</t>
 	<t>
-	  
+
 	  Secondly, HNCP tries to do too much, and invents too much that is new. HNCP is a complicated protocol for propagating
 	  network configuration information in a mesh. It does not assume that any network is a stub network, and because of that,
 	  using it to support stub networks is needlessly complicated.
@@ -215,7 +215,7 @@
 	  not possible to purchase a router that implements HNCP.  There exists a prototype implementation in OpenWRT, but getting
 	  it to actually work is problematic, and many problems have been left unsolved, and would be quite difficult to solve with
 	  additional standards work.
-	  
+
 	</t>
 	<t>
 
@@ -284,14 +284,14 @@
 	  <t>
 	    <list style="symbols">
 	      <t>
-		
+
 		The infrastructure must either provide IPv6 service, or not block the provision of IPv6 service by the stub router.
-		
+
 	      </t>
 	      <t>
-		
+
 		Hosts on the infrastructure link must support IPv6 and must support IPv6 neighbor discovery.
-		
+
 	      </t>
 	      <t>
 
@@ -307,7 +307,7 @@
 	      </t>
 
 	      <t>
-		
+
 		Sharing proxy ND information requires new protocol work
 
 	      </t>
@@ -330,7 +330,7 @@
 	    advertisement <xref target="RFC4861"/> issued by the stub router. Since the stub router does not provide IPv6
 	    connectivity, it must not advertise itself as a default router.  Each stub router can provide a default route to the
 	    stub network.
-	    
+
 	  </t>
 	</section>
 	<section title="Addressability">
@@ -403,41 +403,41 @@
 	  </t>
 	</section>
       </section>
-      
+
       <section title="Global reachability">
 	<t>
-	  
+
 	  Global reachability for stub networks requires either the use of NAT64, or else the presence of global
 	  IPv6 service on the link.  As such it is more of an add-on approach than a different approach.  This section
 	  talks about a specific example of global reachability: how to make global reachability work for the
 	  "Stub Reachability using RA" approach mentioned earlier.
-	  
+
 	</t>
 	<t>
-	  
+
 	  The "global reachability" approach has applicability both in the literal sense, and also in the sense of
 	  "reachability beyond the link to which the stub router is directly attached."  The behavior of the stub
 	  router is the same in both cases: it is up to the network infrastructure what prefix is delegated to the
 	  stub router, and what reachability is provided.
-	  
+
 	</t>
 	<section title="Reachability">
 	  <t>
-	    
+
 	    Reachability in this case requires integration into the routing infrastructure. This is most easily accomplished
 	    by having the DHCPv6 prefix delegation server add an entry in the routing table pointing to the stub router
 	    to which the prefix has been delegated. Stub routers can also advertise reachability to the stub network using
 	    router advertisements, but these will only work on the local link.
-	    
+
 	  </t>
 	</section>
 	<section title="Addressability">
 	  <t>
-	    
+
 	    Addressability in this case for hosts on the infrastructure link is assumed to be provided by the infrastructure,
 	    since we are relying on the infrastructure to provide DHCPv6 prefix delegation.  Addressibility on the stub
 	    network is provided using the prefix acquired with prefix delegation.
-	    
+
 	  </t>
 	</section>
 	<section title="Discoverability">
@@ -481,11 +481,11 @@
 
       <section title="Support for IPv4">
 	<t>
-	  
+
 	  This document generally assumes that stub networks only support IPv6. Bidirectional reachability for IPv4 can be provided
 	  using a combination of NAT44 and <xref target="RFC6887">Port Control Protocol</xref>. The use of NAT44 and PCP in this way
 	  has already been solved and need not be discussed here.
-	  
+
 	</t>
 	<section title="Reachability">
 	  <t>
@@ -527,7 +527,7 @@
 	</section>
 	<section title="Addressability">
 	  <t>
-	    
+
 	    Addressability on the stub network can be provided using a ULA prefix specific to the stub network or, if NAT64 is
 	    being used in addition to one of the other solutions discussed here, the prefix allocated on the stub network
 	    for that purpose can also be used for NAT64.
@@ -616,7 +616,7 @@
 
       </t>
       <t>
-	
+
 	To enable cloud hosts to discover stub hosts, stub hosts would need to register with the DNS, and the infrastructure
 	would need to make those registrations available globally, perhaps with whitelisting.  This is probably not a very
 	widely applicable use case, and we do not consider specifying how this works to be part of the work of this document.
@@ -635,13 +635,13 @@
 	  <t>make sure that stub routers attached to each infrastructure link provide complete service on that link</t>
 	</list>
       </t>
-      
+
       <t>
 	Explain further.
       </t>
-      
+
     </section>
-    
+
     <section title="Management Considerations" anchor="mgt">
       <t>
 	TBD
@@ -678,17 +678,17 @@
       <t>No new actions are required by IANA for this document.</t>
     </section>
   </middle>
-  
+
   <back>
     <references title="Informative References">
-      <?rfc include="reference.RFC.4191" ?>
-      <?rfc include="reference.RFC.4861" ?>
-      <?rfc include="reference.RFC.6105" ?>
-      <?rfc include="reference.RFC.6763" ?>
-      <?rfc include="reference.RFC.6887" ?>
-      <?rfc include="reference.RFC.8766" ?>
-      <?rfc include="reference.I-D.sctl-service-registration" ?>
-      <?rfc include="reference.I-D.ietf-6lo-backbone-router"?>
+      <?rfc include="reference.RFC.4191.xml" ?>
+      <?rfc include="reference.RFC.4861.xml" ?>
+      <?rfc include="reference.RFC.6105.xml" ?>
+      <?rfc include="reference.RFC.6763.xml" ?>
+      <?rfc include="reference.RFC.6887.xml" ?>
+      <?rfc include="reference.RFC.8766.xml" ?>
+      <?rfc include="reference.I-D.sctl-service-registration.xml" ?>
+      <?rfc include="reference.I-D.ietf-6lo-backbone-router.xml"?>
     </references>
 
     <section title="Acknowledgments">
