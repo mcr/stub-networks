@@ -1,0 +1,172 @@
+---
+title: Self-configuring Stub Networks for Residential IoT and other networks
+abbrev: stub-net
+docname: draft-lemon-iotops-stub-networks-00
+
+stand_alone: true
+
+ipr: trust200902
+area: Internet
+wg: iotops Working Group
+kw: Internet-Draft
+cat: bcp
+
+pi:    # can use array (if all yes) or hash here
+  toc: yes
+  sortrefs:   # defaults to yes
+  symrefs: yes
+
+author:
+
+- ins: T. Lemon
+  name: Ted Lemon
+  org: Apple, Inc
+  email: elemon@apple.com
+
+- ins: M. Richardson
+  name: Michael Richardson
+  org: Sandelman Software Works
+  email: mcr+ietf@sandelman.ca
+
+normative:
+
+informative:
+  RFC6762:
+  RFC6763:
+
+--- abstract
+
+IETF currently provides protocols for automatically connecting single hosts to existing network infrastructure.
+This document describes a related problem: the problem of connecting a stub network (a collection of hosts behind a router) automatically to existing network infrastructure in the  same manner.
+
+The solution described here is particularly applicatble to unmanaged residential networks, for stub networks consisting of IoT sensors and actuators, but the solution described has general applicability.
+
+Issues against this document can be filed at https://github.com/Abhayakara/stub-networks
+
+--- middle
+
+# Introduction
+
+This document describes the problem of linking stub networks to existing networks automatically, in the same way that hosts, when connected to an existing network, are able to discover network addressing parameters, information about routing, and services that are advertised on the network.
+
+There are several use cases for stub networks.
+Motivating factors include:
+
+*  Transitory connectivity: a mobile device acting as a router for a set of co-located devices could connect to a network and gain access to services for itself and for the co-located devices. Such a stub network is unlikely to have more than one stub router.
+
+*  Incompatible media: for example, a constrained 802.15.4 network connected as a stub network to a WiFi or ethernet infrastructure network.
+In the case of an 802.15.4 network, it is quite possible that the devices used to link the infrastructure network to the stub network will not be conceived of by the end user as routers.
+Consequently, we cannot assume that these devices will be on all the time.
+A solution for this use case will require some sort of commissioning process for stub routers, and can't assume that any particular stub router will always be available; rather, any stub router that is available must be able to adapt to current conditions to provide reachability.
+
+*  Convenience: end users often connect devices to each other in order to extend networks
+
+What makes stub networks a distinct type of network is simply that a stub network never provides transit between networks to which it is connected.
+The term "stub" refers to the way the network is seen by the link to which it is connected: there is reachability through a stub network router to the stub network from that link, but there is no reachability to any link beyond that one.
+
+Stub networks may be globally reachable, or may be only locally reachable.
+A host on a globally reachable stub network can interoperate with other hosts anywhere on the Internet.
+A host on a locally reachable stub network can only interoperate with hosts on the network link(s) to which it is connected.
+
+The goal of this document is to describe the minimal set of changes or behaviors required to use existing IETF specifications to support the stub network use case.
+The result should be a small set of protocol enhancements (ideally no changes at all to protocols) and should be deployable on existing networks without requiring changes
+to those networks.
+Both the locally-reachable and globally-reachable use case should be able to be made to work, and ideally the globally-reachable use case should build on what is used to make the locally-reachable use case work, rather than requiring two separate solutions.
+
+## Interoperability Goals
+
+What we mean by "interoperate" is that a host on a stub network:
+
+*  is discoverable by applicable hosts that are not on the stub network
+
+*  is able to acquire an IP address that can be used to communicate with applicable hosts not on the stub network
+
+*  has reachability to the network(s) to which applicable hosts are attached
+
+*  is reachable from the network(s) to which applicable hosts are attached
+
+Discoverability here means "discoverable using DNS, or DNS Service Discovery".
+As an example, when one host connected to a specific WiFi network wishes to discover services on hosts connected to that same WiFi network, it can do so using multicast DNS {{RFC6762}}, which is an example of DNS Service Discovery.
+Similarly, when a host on some other network wishes to discover the same service, it must use
+DNS-based DNS Service Discovery {{RFC6763}}.
+In both cases, "discoverable using DNS" means that the host has an entry in the DNS.
+
+NOTE: it may be tempting to ask, why do we lump discoverability in with reachability and addressability, both of which are essentially Layer 3 issues?
+The answer is that it does us no good to automatically set up connectivity between stub network hosts and infrastructure hosts if the infrastructure hosts have no mechanism for learning about the availability of services provided by stub network hosts.
+For stub networks that only consume cloud services this will not be an issue, but for stub networks that provide services, e.g. the incompatible media use case mentioned earlier,  discoverability is necessary in order for stub network connectivity to be useful.
+
+Ability to acquire an IP address that can be used to communicate means that the IP address a host on the stub network acquires can be used to communicate with it by hosts on neighbor networks, for locally reachable stub networks, or by hosts on any network, for globally reachable networks.
+Various means of providing such addresses are discussed later.
+
+Reachability to networks on which applicable hosts are attached means that when a host on the stub network has the IP address of an applicable host with which it intends to communicate, that host knows of a next-hop router to which it can send datagrams, so that they will ultimately reach the host with that IP address.
+
+Reachability from networks on which applicable hosts are attached means that when such a host has a datagram destined for an IP address on the stub network, a next-hop router is known by that host which,  when the datagram is sent to that router, will ultimately result in the datagram reaching the intended stub network host.
+
+## Usability Goals
+
+In addition to the interoperability goals we've described above, the additional goal for stub networks is that they be able to be connected automatically, with no user intervention.
+The experience of connecting a stub network to an infrastructure should be as  straightforward as connecting a new host to the same infrastructure network.
+
+## State of the Art
+
+Currently there is one known way to accomplish what we are describing here.
+The Homenet working group produced a protocol, HomeNet Configuration Protocol (HNCP), the   purpose of which is to allow a collection of routers to self-configure.
+As explained in {{hncp}}, HNCP is only a partial solution, and requires a routing protocol (BABEL) as well.
+
+
+
+# Privacy Considerations
+
+YYY
+
+# Security Considerations
+
+ZZZ
+
+# IANA Considerations
+
+# Acknowledgements
+
+Hello.
+
+# Changelog
+
+--- back
+
+# A reviewe of previous solutions
+
+## HNCP
+
+The Homenet working
+group produced a protocol, HomeNet Configuration Protocol (HNCP), the
+purpose of which is to allow a collection of routers to self-
+configure.
+HNCP is not technically constrained to home environments; in principle, it can work in any environment.
+
+The problem with HNCP is twofold.  First, it only works if it is deployed on all routers within the network infrastructure for a site.
+Secondly, it attempts to do too much, and invents too much that is new.
+Let's look at these in order.
+
+First, HNCP only works when deployed on all routers within the network infrastructure.
+To be clear, this does not mean that it is impossible to use HNCP on a network where, for instance, the edge router(s) do not support HNCP.
+What it does mean is that if this configuration works, the reason it works is that the network supports prefix delegation to routers inside the network.
+So a router doing HNCP can get a prefix using prefix delegation from, for example, an edge router, and this will work.
+
+Unfortunately, the way that such an HNCP server should behave is not documented, and it's not actually clear how it should behave.
+What if the DHCP server allocates it a /64?
+HNCP is designed to get a larger prefix and subdivide it--there is no provision for requesting multiple delegations.
+So if we wanted to use HNCP to solve this problem, we would need to do additional work.
+
+Secondly, HNCP tries to do too much, and invents too much that is new.
+HNCP is a complicated protocol for propagating network configuration information in a mesh.
+It does not assume that any network is a stub network, and because of that, using it to support stub networks is needlessly complicated.
+
+Despite having been an IETF proposed standard since 2016, and having been worked on for quite some time before that, it is not possible to purchase a router that implements HNCP.
+There exists a prototype implementation in OpenWRT, but getting it to actually work is problematic, and many problems have been left unsolved, and would be quite difficult to solve with additional standards work.
+
+We know this because several participants in the Homenet Working Group have tried to implement make it work, and yet as yet we have made no documentable progress, and indeed the Homenet Working Group appears to be on the verge of closing.
+
+Because of the first point--the utter lack of commercial implementations of HNCP--any stub network solution that is intended to be deployed to arbitrary networks can't rely on the availability of HNCP.
+
+This may come in the future, but is not available now, and may never be.
+Therefore, whatever approach is taken MAY use HNCP if available, but MUST work without HNCP.  Therefore, using HNCP represents additional implementation complexity; whether this is worth doing is something that should be considered, but because using HNCP is necessarily optional, it probably makes the most sense to assume that any functionality provided by HNCP will be external to the stub network router, and that the stub network router itself need not participate in the HNCP mesh.
