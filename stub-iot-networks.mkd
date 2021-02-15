@@ -38,6 +38,10 @@ informative:
   RFC4861:
   RFC6105:
   RFC6887:
+  RFC8415:
+  RFC7084:
+  RFC4193:
+  RFC6550:
 
 --- abstract
 
@@ -122,8 +126,29 @@ As explained in {{hncp}}, HNCP is only a partial solution, and requires a routin
 
 {{alternates}} describes an number of existing mechanisms, and when they might applicable.
 
+Every Stub network will have a Stub Router that has multiple interfaces (such as wired ethernet, or 802.11, as well as for instance, 802.15.4 LLN interface).
 
-# Discoverability and Stub Networks
+## Address Space
+
+The Stub Router MAY attempt DHCPv6-PD {{RFC8415}} to obtain a prefix.
+In the case that this succeeds, then the Stub Router operates much like home routers specified in {{RFC7084}}.
+Connectivity is usually assured in this case, and there is probably little else to do.
+There exist current home routers which support DHCPv6-PD on the "LAN" side.
+
+In the case where DHCPv6-PD has not succeeded, then like {{RFC7084}} section 3.2.1,
+the Stub router will generate a Unique Local IPv6 Unicast Addresses (ULAs) {{RFC4193}},
+and will announce it to devices on the stub (downstream) interface.
+This may be done with a variety of protocols in additional to IPv6 Router Advertisements, including RPL {{RFC6550}}, as well as OpenThread protocols.
+
+## Connectivity
+
+In addition to announcing the ULA on the downstream interface, the Stub router will also announce the ULA prefix on the upstream interface as well using IPv6 Router Advertisements (RA).
+
+These RAs will announce the prefix, but will announce it with the OnLink (L) flag set to zero.
+
+These RA will not announce a default route, such they do not provide reachability.
+
+## Discoverability and Stub Networks
 
 We can divide the set of hosts needing to be discovered and the set of hosts needing to discover them into four categories:
 
@@ -180,7 +205,12 @@ There are two viable approaches to this problem:
 
 # Privacy Considerations
 
-YYY
+In the locally reachable case, privacy is protected in the sense that names published locally are only visible to devices connected locally.
+This may be insufficient privacy in some cases.
+
+In the globally reachable case, discoverability has privacy implications.
+Unfiltered automatic discoverability is probably not a good idea in the globally reachable case.
+If automatic discoverability is provided, some filtering mechanism would need to be specified.
 
 # Security Considerations
 
@@ -188,9 +218,11 @@ ZZZ
 
 # IANA Considerations
 
+No new actions are required by IANA for this document.
+
 # Acknowledgements
 
-Hello.
+Thanks very much to Alexandre Petrescu for feedback on this document.
 
 # Changelog
 
